@@ -24,15 +24,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 COPY requirements.txt /app/
 
-# 👇 clave para celery 3.x: bajar pip
+# Celery 3.x requiere pip antiguo para evitar el error de metadatos
 RUN python -m pip install --upgrade "pip<24.1"
-# (opcional) constraints para evitar celery 3.1.26.post2 problemático
+
+# (opcional) constraints para blindar Celery 3.x
 # COPY constraints.txt /app/
 # RUN pip install -r requirements.txt -c constraints.txt
-RUN pip install -r requirements.txt
 
+RUN pip install -r requirements.txt
 COPY . /app/
 
-# Arranque gunicorn (Railway expone $PORT)
 ENV PORT=8000
 CMD gunicorn microfinance.wsgi:application --bind 0.0.0.0:${PORT}
